@@ -229,8 +229,7 @@ func mergeSort(head *ListNode) *ListNode {
 // 递归mergeSort时，需要断开中间节点
 // 递归返回条件为head为nil或者head.Next为nil
 
-// 该题问题描述不详细
-// 给定一个单链表L：L->L->...->L_n->L，将其重新排列后变为：L->L_n->L->L_n->L->L_n->...
+// 给定一个单链表L：L1->L2->...-> Ln-1 -> Ln，将其重新排列后变为：L1 -> Ln -> L2 -> Ln-1 -> L3 ->Ln-2 -> L4 -> Ln-3 ...
 // 思路：找到中点断开，翻转后面部分，然后合并前后两个链表
 func reorderList(head *ListNode) *ListNode {
 	if head == nil {
