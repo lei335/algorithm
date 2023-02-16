@@ -166,7 +166,7 @@ func inorderTraversal(root *tree.TreeNode) []int {
 	}
 	res := make([]int, 0)
 	sta := make([]*tree.TreeNode, 0)
-	for root != nil || len(sta) > 0 {
+	for root != nil || len(sta) > 0 { //先比较简单的，不然每次都要查询长度
 		// 先把所有左子树节点保存下来
 		for root != nil {
 			sta = append(sta, root)
@@ -191,7 +191,7 @@ type Node struct {
 }
 
 func cloneGraph(node *Node) *Node {
-	visited := make(map[*Node]*Node)
+	visited := make(map[*Node]*Node) // 这个结构体的设计是关键
 	return clone(node, visited)
 }
 func clone(node *Node, visited map[*Node]*Node) *Node {
@@ -291,12 +291,12 @@ type MyQueue struct {
 }
 
 // 初始化结构体
-func Constructor() MyQueue {
-	return MyQueue{
-		stack: make([]int, 0),
-		back:  make([]int, 0),
-	}
-}
+// func Constructor() MyQueue {
+// 	return MyQueue{
+// 		stack: make([]int, 0),
+// 		back:  make([]int, 0),
+// 	}
+// }
 func (this *MyQueue) Push(x int) {
 	for len(this.back) != 0 {
 		val := this.back[len(this.back)-1]
@@ -359,4 +359,42 @@ func levelOrder(root *tree.TreeNode) [][]int {
 		res = append(res, level)
 	}
 	return res
+}
+
+// 01-matrix
+// 给定一个由0和1组成的矩阵，找出每个元素到最近的0的距离，两个相邻元素间的距离为1
+// 思路：返回该矩阵，该矩阵中每个节点值等于距离，则应该先将元素1设置为-1，因为可能和距离1产生冲突。
+// 之后利用BFS，遍历矩阵，将节点0保存进队列中（先进先出），然后依次弹出队列中节点，
+// 针对该节点，访问其上下左右的四个元素，如果遇到值为-1的节点，就将其距离改为弹出的节点值加1.
+// 被更新距离的节点也保存进队列中，从而更新和它们相邻的元素1的距离。
+func updateMatrix(matrix [][]int) [][]int {
+	queue := make([][]int, 0)
+	for i := 0; i < len(matrix); i++ {
+		for j := 0; j < len(matrix[0]); j++ {
+			if matrix[i][j] == 0 {
+				// 进队列
+				point := []int{i, j}
+				queue = append(queue, point)
+			} else {
+				matrix[i][j] = -1
+			}
+		}
+	}
+	directions := [][]int{{0, 1}, {0, -1}, {-1, 0}, {1, 0}} // 表示上下左右四个方向
+	for len(queue) > 0 {
+		// 从队列中取出
+		point := queue[0]
+		queue = queue[1:]
+		// 依次访问其周围的节点
+		for _, v := range directions {
+			// 如果节点存在并且节点元素为1，则更新其距离
+			x := point[0] + v[0] // 代码应尽量简洁，所以要定义一个局部变量，从而多处复用
+			y := point[1] + v[1]
+			if x >= 0 && x < len(matrix) && y >= 0 && y < len(matrix[0]) && matrix[x][y] == -1 {
+				matrix[x][y] = matrix[point[0]][point[1]] + 1
+				queue = append(queue, []int{x, y})
+			}
+		}
+	}
+	return matrix
 }
