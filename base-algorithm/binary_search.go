@@ -158,18 +158,18 @@ func searchMatrix(matrix [][]int, target int) bool {
 	start := 0
 	end := row*col - 1
 	for start+1 < end {
-		mid := start+(end-start)/2
+		mid := start + (end-start)/2
 		// 获取二维数组对应值
 		val := matrix[mid/col][mid%col]
 		if val < target {
 			start = mid
 		} else if val > target {
 			end = mid
-		}else {
+		} else {
 			return true
 		}
 	}
-	if matrix[start/col][start%col]==target || matrix[end/col][end%col]==target {
+	if matrix[start/col][start%col] == target || matrix[end/col][end%col] == target {
 		return true
 	}
 	return false
@@ -182,14 +182,14 @@ func firstBadVersion(n int) int {
 	start := 0
 	end := n
 	for start+1 < end {
-		mid := start+(end-start)/2
+		mid := start + (end-start)/2
 		if isBadVersion(mid) {
 			end = mid
-		}else if isBadVersion(mid)==false {
-			start=mid
+		} else if isBadVersion(mid) == false {
+			start = mid
 		}
 	}
-	if isBadVersion(start){
+	if isBadVersion(start) {
 		return start
 	}
 	return end
@@ -199,7 +199,141 @@ func isBadVersion(n int) bool {
 }
 
 // 假设按照升序排序的数组在预先未知的某个点上进行了旋转（例如，数组[0,1,2,4,5,6,7]
-// 可能变成[4,5,6,7,0,1,2]。请找出其中最小的元素。
+// 可能变成[4,5,6,7,0,1,2]。请找出其中最小的元素。假设不含重复元素
 func findMin(nums []int) int {
-	// 思路：
+	// 思路：最后一个值作为target，往左移动，最后比较start和end的值
+	if nums == nil {
+		return -1
+	}
+	start := 0
+	end := len(nums) - 1
+	for start+1 < end {
+		mid := start + (end-start)/2
+		// 最后一个元素值作为target
+		if nums[mid] <= nums[end] {
+			end = mid
+		} else {
+			start = mid
+		}
+	}
+	if nums[start] > nums[end] {
+		return nums[end]
+	}
+	return nums[start]
+}
+
+// 假设按照升序排序的数组在预先未知的某个点上进行了旋转（例如，数组[0,1,2,4,5,6,7]
+// 可能变成[4,5,6,7,0,1,2]。请找出其中最小的元素。假设包含重复元素
+func findMin2(nums []int) int {
+	// 思路：跳过重复元素，mid值和end值比较
+	if len(nums) == 0 {
+		return -1
+	}
+	start := 0
+	end := len(nums) - 1
+	for start+1 < end {
+		// 去掉重复元素
+		for start < end && nums[end] == nums[end-1] {
+			end--
+		}
+		for start < end && nums[start] == nums[start+1] {
+			start++
+		}
+		mid := start + (end-start)/2
+		if nums[mid] < nums[end] {
+			end = mid
+		} else {
+			start = mid
+		}
+	}
+	if nums[start] > nums[end] {
+		return nums[end]
+	}
+	return nums[start]
+}
+
+// 假设按照升序排序的数组在预先未知的某个节点上进行了旋转。例如，数组[0,1,2,4,5,6,7]可能变为[4,5,6,7,0,1,2]。
+// 搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回-1. 你可以假设数组中不存在重复的元素。
+func searchInRevolve(nums []int, target int) int {
+	// 思路：两条上升直线，有四种情况
+	if nums == nil {
+		return -1
+	}
+	start := 0
+	end := len(nums) - 1
+	for start+1 < end {
+		mid := start + (end-start)/2
+		// 有四种情况，mid位于左边部分、mid位于右边部分
+		// 相等，直接返回
+		if nums[mid] == target {
+			return mid
+		}
+		// mid位于左边部分
+		if nums[start] < nums[mid] {
+			// target位于start和mid之间
+			if nums[start] <= target && target <= nums[mid] {
+				end = mid
+			} else { // target位于mid和end之间
+				start = mid
+			}
+		} else if nums[end] > nums[mid] { // mid位于右边部分
+			// target位于mid和end之间
+			if nums[mid] <= target && target <= nums[end] {
+				start = mid
+			} else { // target位于start和mid之间
+				end = mid
+			}
+		}
+	}
+	if nums[start] == target {
+		return start
+	}
+	if nums[end] == target {
+		return end
+	}
+	return -1
+}
+
+// 注意点：面试时可以直接画图说明，空讲容易让大家都比较懵圈
+
+// 假设按照升序排序的数组在预先未知的某个点上进行了旋转，例如，数组[0,0,1,2,2,5,6]可能变成[2,5,6,0,0,1,2]。编写一个函数
+// 来判断给定的目标值是否存在于数组中。若存在返回true，否则返回false。（包含重复元素）
+func searchInRevolve2(nums []int, target int) bool {
+	// 思路：两条上升直线，四种情况判断，并且处理重复数字
+	if len(nums) == 0 {
+		return false
+	}
+	start := 0
+	end := len(nums) - 1
+	for start+1 < end {
+		// 处理重复元素。二分搜索中都可以这样处理重复元素！！
+		for start < end && nums[start] == nums[start+1] {
+			start++
+		}
+		for start < end && nums[end] == nums[end-1] {
+			end--
+		}
+		mid := start + (end-start)/2
+		if nums[mid] == target {
+			return true
+		}
+		// 四种情况
+		if nums[start] < nums[mid] {
+			if nums[start] <= target && target <= nums[mid] {
+				end = mid
+			} else {
+				start = mid
+			}
+		} else if nums[mid] < nums[end] {
+			if nums[mid] <= target && target <= nums[end] {
+				start = mid
+			} else {
+				end = mid
+			}
+		}
+	}
+	if nums[start] == target || nums[end] == target {
+		return true
+	}
+	return false
 }

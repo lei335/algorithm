@@ -1,9 +1,8 @@
 package stack
 
 import (
+	"github.com/study/algorithm/data-structure/tree"
 	"strconv"
-
-	"github.com/study/algorithm/tree"
 )
 
 // 栈是允许在同一端进行插入和删除操作的特殊线性表
