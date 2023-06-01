@@ -41,3 +41,41 @@ func swap(nums []int, i,j int) {
 	nums[i] = nums[j]
 	nums[j] = tmp
 }
+
+// 归并排序
+func MergeSort(nums []int) []int {
+	return mergeSort(nums)
+}
+func mergeSort(nums []int) []int {
+	// 分治法
+	// 先确定返回条件
+	if len(nums)<=1 {
+		return nums
+	}
+	// 再找出中点
+	mid := len(nums)/2
+	// 递归处理
+	left := mergeSort(nums[:mid])
+	right := mergeSort(nums[mid:])
+	// nums = merge(left, right) // 这里不应该直接赋给nums
+	result := merge(left, right)
+	return result
+}
+func merge(left, right []int) []int {
+	var result []int
+	l,r := 0,0
+	// 合并两个有序数组
+	for l<len(left) && r<len(right) {
+		if left[l] < right[r] {
+			result = append(result, left[l])
+			l++
+		}else {
+			result = append(result, right[r])
+			r++
+		}
+	}
+	// 合并剩余部分
+	result = append(result, left[l:]...)
+	result = append(result, right[r:]...)
+	return result
+}
