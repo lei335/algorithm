@@ -1,5 +1,7 @@
 package base
 
+import "github.com/eapache/go-resiliency/breaker"
+
 // 常考排序：快速排序、归并排序、堆排序
 // 此外有十大经典排序算法（分为比较类排序和非比较类排序）
 // 比较类排序：冒泡、快速（交换）；简单插入、希尔排序（插入）；堆排序、简单选择（选择）；二路归并排序、多路归并排序（归并）；
@@ -78,4 +80,51 @@ func merge(left, right []int) []int {
 	result = append(result, left[l:]...)
 	result = append(result, right[r:]...)
 	return result
+}
+
+// 堆排序
+// 完全二叉树：除最后一层之外，其他所有层都是满的且最后一层的叶子节点都在最左边
+// 堆包含大顶堆和小顶堆。大顶堆：所有根节点都大于等于其左右孩子节点的完全二叉树；小顶堆：所有根节点都小于等于其左右孩子节点的完全二叉树
+func HeapSort(a []int) []int {
+	// 先构造成一个大顶堆（升序用大顶堆，降序用小顶堆）
+	// 1. 构造大顶堆：从最后一个非叶子节点开始构造（找出其和其左右孩子中最大的节点当根节点）
+	for i:=len(a)/2-1;i>=0;i--{
+		sink(a, i, len(a))
+	}
+
+	// 2. 交换a[0]和a[len-1], 即将堆顶节点和最后一个节点互换，
+	// 3. 然后将前n-1个节点（总共n个节点）再次下沉保持成一个大顶堆
+	// 4. 再次将剩余的n-1个节点构造的大顶堆中，堆顶节点和最后一个节点（即a[len-2]）互换，依此类推
+	for i:=len(a)-1;i>=1;i--{
+		heapswap(a, i, 0)
+		sink(a, 0, i)
+	}
+	return a
+}
+func sink(a []int, i, length int) {
+	// 最后一个非叶子节点是len(a)/2-1（索引从0开始）
+	for {
+		idx := i // 记录根、左、右三个节点中最大值的索引
+		l := 2*i + 1 // 左节点索引为2*i+1
+		r := 2*i + 2 // 右节点索引为2*i+2
+		// 存在左节点，且左节点值较大，则取左节点
+		if l < length && a[l] > a[idx] {
+			idx = l
+		}
+		// 存在右节点，且右节点值较大，则取右节点
+		if r < length && a[r] > a[idx] {
+			idx = r 
+		}
+		// 根节点较大，则不用交换值
+		if idx == i {
+			break
+		}
+		// 如果根节点较小，则交换值，并且继续下沉
+		heapswap(a, idx, i)
+		// 继续下沉idx节点
+		i = idx
+	}
+}
+func heapswap(a []int, i, j int) {
+	a[i], a[j] = a[j], a[i]
 }
