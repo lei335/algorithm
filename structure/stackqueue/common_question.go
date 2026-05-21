@@ -1,7 +1,7 @@
-package stack
+package stackqueue
 
 import (
-	"github.com/study/algorithm/data-structure/tree"
+	"github.com/study/algorithm/structure/tree"
 	"strconv"
 )
 
@@ -290,12 +290,13 @@ type MyQueue struct {
 }
 
 // 初始化结构体
-// func Constructor() MyQueue {
-// 	return MyQueue{
-// 		stack: make([]int, 0),
-// 		back:  make([]int, 0),
-// 	}
-// }
+//
+//	func Constructor() MyQueue {
+//		return MyQueue{
+//			stack: make([]int, 0),
+//			back:  make([]int, 0),
+//		}
+//	}
 func (this *MyQueue) Push(x int) {
 	for len(this.back) != 0 {
 		val := this.back[len(this.back)-1]
